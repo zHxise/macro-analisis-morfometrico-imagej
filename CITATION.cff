@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: Macro de análisis morfométrico para ImageJ
+message: Si usas esta herramienta en tu investigación, por favor cítala.
+type: software
+authors:
+  - given-names: Braulio Arturo
+    family-names: Rodríguez Angulo
+    affiliation: Escuela Nacional de Ciencias Biológicas, Instituto Politécnico Nacional
+version: 2.0.0
+license: MIT
+abstract: >-
+  Macro de ImageJ que convierte trazos manuales sobre estructuras filamentosas
+  en regiones de interés de ancho calibrado, y automatiza su medición y
+  exportación reproducible (CSV de mediciones y RoiSet de trazos).
+keywords:
+  - ImageJ
+  - análisis de imagen
+  - morfometría
+  - flagelo
+  - espermatozoide
+  - reproducibilidad
