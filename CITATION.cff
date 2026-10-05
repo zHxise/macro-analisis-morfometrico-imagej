@@ -6,12 +6,15 @@ authors:
   - given-names: Braulio Arturo
     family-names: Rodríguez Angulo
     affiliation: Escuela Nacional de Ciencias Biológicas, Instituto Politécnico Nacional
-version: 2.0.0
+version: 2.1.0
+date-released: 2026-10-04
+repository-code: https://github.com/zHxise/macro-analisis-morfometrico-imagej
 license: MIT
 abstract: >-
   Macro de ImageJ que convierte trazos manuales sobre estructuras filamentosas
-  en regiones de interés de ancho calibrado, y automatiza su medición y
-  exportación reproducible (CSV de mediciones y RoiSet de trazos).
+  en regiones de interés de ancho calibrado, mide su longitud e intensidad,
+  y automatiza su exportación reproducible (CSV de mediciones, RoiSet de
+  trazos, registro de parámetros e imagen de control).
 keywords:
   - ImageJ
   - análisis de imagen
@@ -19,3 +22,5 @@ keywords:
   - flagelo
   - espermatozoide
   - reproducibilidad
+  - longitud flagelar
+  - Fiji

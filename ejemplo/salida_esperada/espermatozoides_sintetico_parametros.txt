@@ -1,0 +1,13 @@
+flagelos.ijm v2.1.0
+fecha=2026-10-04 22:06
+imagej=1.54u
+imagen=espermatozoides_sintetico.tif
+carpeta_imagen=<ruta local>
+dimensiones_px=640x480
+escala=0.125 µm/px
+unidad_largo=µm
+unidad_area=µm^2
+ancho_trazo=0.5 µm (= 4.000 px)
+suavizado=Fit Spline (segmented y freehand line)
+mediciones=area mean min max median integrated display limit redirect=None decimal=3
+n_rois=3

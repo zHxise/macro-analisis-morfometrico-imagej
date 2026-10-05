@@ -1,91 +1,157 @@
-# Macro de análisis morfométrico para ImageJ
+# flagelos.ijm: morfometría de estructuras filamentosas en ImageJ
 
-`flagelos.ijm` — macro de ImageJ para la **cuantificación reproducible de estructuras filamentosas**.
+[![Versión](https://img.shields.io/badge/versión-2.1.0-blue)](CHANGELOG.md)
+[![ImageJ](https://img.shields.io/badge/ImageJ%20%2F%20Fiji-%E2%89%A5%201.52-orange)](https://imagej.net/)
+[![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
+[![Prueba de exactitud](https://img.shields.io/badge/error%20de%20longitud-%3C%200.5%25-brightgreen)](#exactitud-prueba-con-imagen-sintética)
+<!-- pendiente: badge del DOI de Zenodo -->
 
-Convierte un trazo manual sobre una estructura alargada en una región de interés (ROI) de ancho calibrado, y automatiza su medición y exportación. Desarrollada para el contorneado y la cuantificación de flagelos de espermatozoides, es aplicable a cualquier estructura que se mida trazando su eje y midiendo en una banda de ancho definido: cilios, neuritas y prolongaciones astrocíticas, hifas, fibras de estrés, microvasculatura, fibras musculares.
+Macro de ImageJ/Fiji para medir estructuras alargadas a partir de un trazo manual. El trazo se suaviza, se mide su largo y se convierte en una banda de ancho fijo donde se mide la intensidad. Los trazos se exportan junto con los datos para poder revisarlos después.
 
-El objetivo no es ahorrar clics, sino **estandarizar la medición**: mismo ancho de trazo, mismo suavizado y mismo conjunto de parámetros en todas las células, con los trazos exportados junto a los datos para poder reauditarlos.
+La hice para medir flagelos de espermatozoides. También sirve para cilios, neuritas, prolongaciones de astrocitos, hifas, fibras de estrés, microvasculatura o fibras musculares, o cualquier cosa que se mida trazando su eje.
 
----
+<!--
+  pendiente: GIF de ~10 s (trazar, F, M) en docs/img/demo.gif
+  <p align="center"><img src="docs/img/demo.gif" width="700" alt="Demostración de flagelos.ijm"></p>
+-->
+
+<p align="center">
+  <img src="docs/img/ejemplo_control.png" width="600" alt="Imagen de control exportada por la macro: tres flagelos trazados y numerados">
+  <br><sub>Imagen de control que exporta la macro (imagen sintética de <code>ejemplo/</code>).</sub>
+</p>
+
+La idea es que todas las células se midan igual: mismo ancho de trazo, mismo suavizado y mismas mediciones.
+
+## Qué mide y qué exporta
+
+- Largo del eje, en las unidades de la escala.
+- Área, media, mínimo, máximo, mediana y densidad integrada dentro de la banda.
+- Ancho de la banda en px o en µm.
+- Los trazos en un `RoiSet.zip`, que se pueden volver a abrir con la tecla `A`.
+- Un archivo con los parámetros usados (versión, escala, ancho, fecha, versión de ImageJ).
+- Una imagen con los trazos numerados.
 
 ## Instalación
 
-1. Descarga `flagelos.ijm`.
-2. En ImageJ o Fiji: **Plugins ▸ Macros ▸ Install…** y selecciona el archivo.
+1. Descarga [`flagelos.ijm`](flagelos.ijm).
+2. En ImageJ o Fiji: **Plugins ▸ Macros ▸ Install…** y elige el archivo.
 
-Los atajos quedan activos hasta que cierres ImageJ. Requiere ImageJ 1.52 o superior.
+Los atajos funcionan hasta cerrar ImageJ. Necesita ImageJ 1.52 o más reciente.
 
 ## Uso
 
 | Tecla | Acción |
 |-------|--------|
-| `C` | Configurar el ancho de trazo (una vez por sesión) |
-| `F` | Guardar el trazo actual como ROI medible |
+| `C` | Ancho de trazo, en px o en unidades físicas |
+| `F` | Guardar el trazo actual como ROI |
 | `D` | Deshacer el último ROI |
-| `M` | Medir todos los ROIs y exportar CSV + RoiSet |
+| `M` | Medir todos los ROIs y exportar |
+| `A` | Abrir un `RoiSet.zip` para volver a medir |
 | `R` | Reiniciar la sesión |
+| `H` | Ayuda |
 
-**Flujo de trabajo**
+Pasos:
 
-1. Abre la imagen y pulsa `C` para fijar el ancho de trazo.
-2. Selecciona la herramienta **Segmented Line**.
-3. Traza el eje de la estructura; doble clic para terminar.
-4. Pulsa `F`. El trazo se suaviza por spline, se convierte en área y se guarda con nombre propio en el ROI Manager. La barra de estado muestra el área y la media de esa estructura.
-5. Repite para cada estructura válida. Si te equivocas, `D`.
-6. Al terminar, pulsa `M` y elige la carpeta de destino.
+1. Abrir la imagen y ponerle escala (**Analyze ▸ Set Scale…**).
+2. `C` para fijar el ancho de trazo.
+3. Con **Segmented Line**, trazar el eje de la estructura (doble clic para terminar).
+4. `F`. La barra de estado muestra largo, área y media del trazo.
+5. Repetir con cada estructura. `D` borra el último.
+6. `M` y elegir la carpeta donde guardar.
 
-## Salidas
+### Ejemplo
+
+En [`ejemplo/`](ejemplo) hay una imagen sintética y su salida en [`ejemplo/salida_esperada/`](ejemplo/salida_esperada). Abre la imagen, pulsa `A`, carga el `RoiSet.zip` de la salida esperada y luego `M`. Deben salir los mismos números.
+
+## Archivos de salida
 
 | Archivo | Contenido |
 |---------|-----------|
-| `<imagen>_resultados.csv` | Una fila por estructura: área, media, mín., máx., mediana, densidad integrada y etiqueta de origen |
-| `<imagen>_RoiSet.zip` | Los trazos, reabribles en el ROI Manager para verificar o rehacer la medición |
+| `<imagen>_resultados.csv` | Una fila por estructura: largo, área, media, mín., máx., mediana, densidad integrada, ancho usado y etiqueta del trazo |
+| `<imagen>_RoiSet.zip` | Los trazos, con largo y ancho guardados en cada ROI |
+| `<imagen>_parametros.txt` | Versión de la macro y de ImageJ, fecha, escala, unidades y ancho de trazo |
+| `<imagen>_control.png` | La imagen con los trazos numerados |
 
-Exportar el `RoiSet` junto al CSV es deliberado: permite que un tercero abra los mismos trazos sobre la misma imagen y compruebe de dónde salió cada número.
+Para juntar los resultados de varias imágenes en una tabla, con resumen por imagen o por grupo:
 
----
+```bash
+python analisis/combinar_resultados.py carpeta_de_resultados/ --grupos grupos.csv
+```
+
+## Validación
+
+### Exactitud: prueba con imagen sintética
+
+En [`pruebas/`](pruebas) se generan espermatozoides sintéticos con largo de flagelo conocido, se trazan con la macro en ImageJ y se compara:
+
+| Célula | Largo real (µm) | Largo macro (µm) | Error |
+|---:|---:|---:|---:|
+| 1 | 49.97 | 49.80 | −0.33 % |
+| 2 | 48.17 | 48.00 | −0.34 % |
+| 3 | 42.71 | 42.50 | −0.49 % |
+
+También se revisa que al reabrir el `RoiSet` y medir otra vez salgan exactamente los mismos valores. El error es negativo porque un trazo de 12 puntos corta un poco las curvas.
+
+```bash
+IJ_JAR=/ruta/a/ij.jar bash pruebas/correr_pruebas.sh
+```
+
+### Comparación con medición manual
+
+<!--
+  pendiente: figura y tabla con datos reales
+  1. llenar analisis/plantilla_validacion.csv (20 a 30 estructuras)
+  2. correr analisis/validacion.ipynb (guarda docs/img/validacion.png)
+  3. descomentar y llenar con analisis/resumen_validacion.csv
+  <p align="center"><img src="docs/img/validacion.png" width="750" alt="Bland-Altman macro vs manual"></p>
+
+| Variable | n | Sesgo | LoA 95 % | CCC de Lin | ICC(2,1) |
+|---|---:|---:|---:|---:|---:|
+| Largo | | | | | |
+| Área  | | | | | |
+-->
+
+[`analisis/validacion.ipynb`](analisis/validacion.ipynb) compara la macro con la medición manual (Bland-Altman y CCC de Lin) y calcula la repetibilidad (ICC(2,1)) con los datos de [`analisis/plantilla_validacion.csv`](analisis/plantilla_validacion.csv).
 
 ## Calibración del ancho de trazo
 
-El ancho de trazo determina la banda sobre la que se integra la señal, así que **es un parámetro experimental, no una preferencia visual**. Calíbralo así:
+El ancho define la banda donde se mide la señal, así que cambia los resultados y hay que calibrarlo:
 
-1. Mide manualmente una estructura representativa por el método que ya usas.
-2. Traza esa misma estructura con la macro.
-3. Ajusta el ancho con `C` hasta reproducir el área manual.
-4. Usa ese valor para todo el conjunto de imágenes.
+1. Medir a mano una estructura representativa con el método de siempre.
+2. Trazar la misma estructura con la macro.
+3. Ajustar el ancho con `C` hasta que el área coincida.
+4. Usar ese valor en todas las imágenes.
 
-Conviene además definir la escala espacial (**Analyze ▸ Set Scale…**) antes de medir; si la imagen no está calibrada, la macro avisa y las áreas se reportan en px².
+Si el ancho se pone en µm, la macro lo pasa a píxeles con la escala de cada imagen, así sirve igual con otro objetivo u otro microscopio. El último ancho se guarda para la siguiente sesión.
 
-> ### ⚠️ Nota para quienes usaron la versión 1
->
-> La v1 fijaba el ancho con `run("Properties...", "width=...")`, que invoca **Image ▸ Properties** —la calibración de la imagen— y no el ancho de la línea. Es probable que ese ancho **nunca se estuviera aplicando** y que la conversión usara el ancho de línea global de ImageJ.
->
-> La v2 lo fija con `Roi.setStrokeWidth()`, justo antes de convertir a área.
->
-> **Antes de usar la v2 sobre datos ya analizados, vuelve a medir tu célula de calibración.** Si el área cambia respecto a la v1, el ancho anterior no se estaba aplicando y hay que recalibrar el valor. No mezcles resultados de ambas versiones en un mismo análisis.
-
----
-
-## Cambios en la versión 2
-
-- **Ancho de trazo parametrizable** (`C`) en lugar de un valor fijo en el código; persiste durante la sesión.
-- **Ancho aplicado de forma inequívoca** con `Roi.setStrokeWidth()` — ver la nota de calibración.
-- **Corregida la duplicación de mediciones.** En la v1, `F` medía cada ROI al guardarlo y `M` volvía a medirlos todos, de modo que el CSV salía con cada estructura repetida. Ahora `F` da retroalimentación con `getStatistics()`, que no escribe en la tabla, y `M` limpia y mide una sola vez.
-- **Corregido `roiManager("Select All")`**, que no es un comando válido del ROI Manager.
-- **Corregida la validación del tipo de selección.** La v1 aceptaba el tipo 8, que es *angle* y no una línea; ahora acepta línea recta, segmented line y freehand line.
-- **Nombres de archivo correctos.** La v1 usaba `replace(nombre, ".jpg", "")`, donde el punto es un comodín de expresión regular; ahora la extensión se recorta por posición.
-- **ROIs con nombre propio**, para que cada fila del CSV se pueda rastrear hasta su trazo.
-- Aviso cuando la imagen carece de escala espacial.
-- Verificación de que el número de mediciones coincide con el número de ROIs.
-- Comprobación de que hay una imagen abierta; cancelar el diálogo de carpeta ya no deja la exportación a medias.
-- Nueva tecla `R` para reiniciar la sesión.
+> **Si usaste la versión 1:** su ancho de trazo probablemente nunca se aplicó. Vuelve a medir tu célula de calibración y no mezcles resultados de la v1 con los de otras versiones. Más detalle en el [CHANGELOG](CHANGELOG.md#200).
 
 ## Limitaciones
 
-- El trazado es manual: la macro estandariza la medición, no la detección.
-- El ancho de trazo es único para toda la sesión; estructuras de grosor muy dispar requieren analizarse por lotes separados.
-- No implementa criterios de inclusión o exclusión de células: esa decisión sigue siendo del operador.
+- El trazo es manual. La macro solo hace que la medición sea igual en todas, no detecta nada sola.
+- Un solo ancho por sesión. Si hay estructuras de grosor muy distinto, se analizan por separado.
+- Qué células se incluyen o excluyen lo decide quien mide.
+
+## Estructura
+
+```
+flagelos.ijm                 la macro
+ejemplo/                     imagen sintética + salida esperada
+pruebas/                     prueba de exactitud en ImageJ
+analisis/                    notebook de validación y script para juntar resultados
+docs/img/                    imágenes del README
+```
+
+## Cómo citar
+
+Los datos para citar están en [`CITATION.cff`](CITATION.cff) (botón **Cite this repository** en GitHub).
 
 ## Licencia
 
-MIT — ver [LICENSE](LICENSE).
+MIT, ver [LICENSE](LICENSE).
+
+---
+
+### English summary
+
+`flagelos.ijm` is an ImageJ/Fiji macro set for measuring filamentous structures (sperm flagella, cilia, neurites, hyphae, fibers) from a manual line trace. The trace is spline-smoothed, its length is measured, and it is turned into a fixed-width band (px or µm) where intensity is measured. Each export saves the results CSV, the ROI set, a parameters file and an overlay image. On synthetic images with known flagellum length the length error is below 0.5 %. Install with *Plugins ▸ Macros ▸ Install…*. Keys: `C` width, `F` save trace, `D` undo, `M` measure and export, `A` reopen ROI set, `R` reset, `H` help.
